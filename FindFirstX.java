@@ -55,7 +55,7 @@ public class FindFirstX {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();    //获取开始时间
-        int num_files = 10;// 被分割文件数量
+        int num_files = 36;// 被分割文件数量
         String sourceFilePath = "G:/wordTest710.txt";
         String desFolderPath = "G:/PingCAP";
         String fileName = "wordShow"; // 小目标文件标准名称
