@@ -36,8 +36,8 @@ public class FindFirstX {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();    //获取开始时间
         int num_files = 38;// 被分割文件数量
-        String sourceFilePath = "G:/wordTest710.txt";
-        String desFolderPath = "G:/PingCAP";
+        String sourceFilePath = "G:/wordTest710.txt"; // 100G大文件路径
+        String desFolderPath = "G:/PingCAP"; //切割后的小文件存放路径
         String fileName = "wordShow"; // 小目标文件标准名称
         String[] strTemp; // 存放字符串与出现位置的数组
         String result = "全文无非重复字符串"; // 保存最终结果
