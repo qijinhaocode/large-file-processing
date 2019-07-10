@@ -80,7 +80,7 @@ public class FileIO {
         }
 
         try {
-            Long index = 0L;
+            Long index = 0L; //统计字符串在源文件中的位置
             inputStream = new FileInputStream(sourceFilePath);
             bis = new BufferedInputStream(inputStream); //带缓冲数组的输入流
             // reader = new BufferedReader(new InputStreamReader(bis, "utf-8"), 1 * 1024 * 1024);
