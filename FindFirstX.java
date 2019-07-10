@@ -35,8 +35,10 @@ public class FindFirstX {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        int num_files = 38;// 被分割文件数量
-        String sourceFilePath = "G:/wordTest710.txt"; // 100G大文件路径
+        int num_files = 5;// 被分割文件数量
+        // String sourceFilePath = "G:/wordTest710.txt"; // 100G大文件路径
+        String sourceFilePath = "D:/面试/pingCAP/test.txt"; // 100G大文件路径
+        FileIO.delAllFile("G:/PingCAP");
         String desFolderPath = "G:/PingCAP"; //切割后的小文件存放路径
         String fileName = "wordShow"; // 小目标文件标准名称
         String[] strTemp; // 存放字符串与出现位置的数组
@@ -56,7 +58,7 @@ public class FindFirstX {
                 String line;
                 while ((line = reader.readLine()) != null) {
 
-                    strTemp = line.trim().split("%");
+                    strTemp = line.trim().split("分");
                     KeepWordsToMap(wordsMap, strTemp[0], Long.valueOf(strTemp[1])); // 保存到容器
                 }
 
@@ -116,6 +118,7 @@ public class FindFirstX {
             if (wordsMap.get(s).frequency == 1 && wordsMap.get(s).firstApperIndex < minFirstApperIndex) {
                 wordsInfo.word = s;
                 wordsInfo.firstApperIndex = wordsMap.get(s).firstApperIndex;
+                minFirstApperIndex = wordsMap.get(s).firstApperIndex;
                 wordsInfo.frequency = 1;
             }
         }
