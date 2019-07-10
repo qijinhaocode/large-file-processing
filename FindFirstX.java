@@ -34,7 +34,7 @@ public class FindFirstX {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        long startTime = System.currentTimeMillis();    //获取开始时间
+        long startTime = System.currentTimeMillis();
         int num_files = 38;// 被分割文件数量
         String sourceFilePath = "G:/wordTest710.txt"; // 100G大文件路径
         String desFolderPath = "G:/PingCAP"; //切割后的小文件存放路径
