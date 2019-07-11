@@ -52,6 +52,11 @@ public class FileIO {
         bw.append(line + ch + Index + "\r\n");
     }
 
+    public static void WriteToFile(String line, BufferedWriter bw) throws IOException {
+
+        bw.append(line + "\r\n");
+    }
+
     /**
      * 方法： 把大文件切割成小文件
      *
@@ -61,7 +66,7 @@ public class FileIO {
      * @param fileName       小目标文件标准名称
      * @throws IOException
      */
-    public static void cutLargeFile(int num_file, String sourceFilePath, String desFolderPath, String fileName) throws IOException {
+    public static void cutLargeFile(int num_file, String sourceFilePath, String desFolderPath, String fileName, long smallFileMem) throws IOException {
 
         long startTime = System.currentTimeMillis();    //获取开始时间
         FileInputStream inputStream = null;
@@ -83,9 +88,8 @@ public class FileIO {
             Long index = 0L; //统计字符串在源文件中的位置
             inputStream = new FileInputStream(sourceFilePath);
             bis = new BufferedInputStream(inputStream); //带缓冲数组的输入流
-            // reader = new BufferedReader(new InputStreamReader(bis, "utf-8"), 1 * 1024 * 1024);
-            reader = new BufferedReader(new InputStreamReader(bis, "utf-8"));
-            String line = "";
+            reader = new BufferedReader(new InputStreamReader(bis, "utf-8"), 1 * 1024 * 1024);
+            String line;
 
             while ((line = reader.readLine()) != null) {
                 int type = line.trim().hashCode() % num_file > 0 ? line.trim().hashCode() % num_file : -line.trim().hashCode() % num_file;
@@ -102,7 +106,6 @@ public class FileIO {
                 fops[i].close();
                 writers[i].close();
                 bws[i].close();
-
             }
 
         } catch (IOException e) {
@@ -119,10 +122,71 @@ public class FileIO {
                 bis.close();
             }
         }
+        for (File file : files) {
+            FileInputStream inputStream_re = null;
+            BufferedInputStream bis_re = null;
+            BufferedReader reader_re = null;
+            System.out.println(file.length());
+            if (file.length() > smallFileMem) {
+                int copies = (int) (Math.ceil((double) file.length()) / (double) smallFileMem); // 分成copies份
+                //int copies = 2; // 分成copies份
+                File[] files_re = new File[copies];
+                FileOutputStream[] fops_re = new FileOutputStream[copies];
+                OutputStreamWriter[] writers_re = new OutputStreamWriter[copies];
+                BufferedWriter[] bws_re = new BufferedWriter[copies];
+                for (int i = 0; i < copies; i++) {
+                    int fileIndex = i + num_file;
+                    files_re[i] = new File(desFolderPath + "/" + fileName + (fileIndex) + ".txt");
+                    fops_re[i] = new FileOutputStream(files_re[i], true);
+                    writers_re[i] = new OutputStreamWriter(fops_re[i], "UTF-8");
+                    bws_re[i] = new BufferedWriter(writers_re[i], 1 * 1024 * 1024);
+                }
+                try {
+                    inputStream_re = new FileInputStream(file.getAbsoluteFile());
+                    bis_re = new BufferedInputStream(inputStream_re); //带缓冲数组的输入流
+                    reader_re = new BufferedReader(new InputStreamReader(bis_re, "utf-8"), 1 * 1024 * 1024);
+                    String line;
+                    String[] trueStr;//文本中真实字符串
+
+                    while ((line = reader_re.readLine()) != null) {
+                        trueStr = line.trim().split("分");
+                        int type = Utils.APHash(trueStr[0]) % copies > 0 ? Utils.APHash(trueStr[0]) % copies : -Utils.APHash(trueStr[0]) % copies;
+                        FileIO.WriteToFile(line.trim(), bws_re[type]);
+
+                    }
+                    for (int i = 0; i < copies; i++) {
+                        fops_re[i].flush();
+                        writers_re[i].flush();
+                        bws_re[i].flush();
+                        fops_re[i].close();
+                        writers_re[i].close();
+                        bws_re[i].close();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (inputStream_re != null) {
+                        inputStream_re.close();
+                    }
+
+                    if (reader_re != null) {
+                        reader_re.close();
+                    }
+                    if (bis_re != null) {
+                        bis_re.close();
+                    }
+                }
+                num_file = num_file + copies;
+                file.delete();
+            }
+        }
+
         long endTime = System.currentTimeMillis();
         System.out.println("大文件分成小文件程序运行时间：" + (endTime - startTime) + "ms");
 
     }
+
 
     /**
      * 清空文件夹

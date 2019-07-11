@@ -25,7 +25,6 @@ class WordsInfo {
     }
 }
 
-
 public class FindFirstX {
     /**
      * 主函数入口
@@ -36,8 +35,9 @@ public class FindFirstX {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         int num_files = 5;// 被分割文件数量
-        // String sourceFilePath = "G:/wordTest710.txt"; // 100G大文件路径
-        String sourceFilePath = "D:/面试/pingCAP/test.txt"; // 100G大文件路径
+        String sourceFilePath = "G:/wordTest710.txt"; // 100G大文件路径
+        // String sourceFilePath = "D:/面试/pingCAP/test.txt"; // 100G大文件路径
+        // String sourceFilePath = "D:/面试/pingCAP/test.txt"; // 100G大文件路径
         FileIO.delAllFile("G:/PingCAP");
         String desFolderPath = "G:/PingCAP"; //切割后的小文件存放路径
         String fileName = "wordShow"; // 小目标文件标准名称
@@ -48,11 +48,18 @@ public class FindFirstX {
         FileInputStream inputStream = null;
         BufferedInputStream bis = null;
         BufferedReader reader = null;
-        FileIO.cutLargeFile(num_files, sourceFilePath, desFolderPath, fileName); //按照内存限制切割小文件
-        for (int i = 0; i < num_files; i++) {
+        FileIO.cutLargeFile(num_files, sourceFilePath, desFolderPath, fileName, 1024 * 1024 * 5); //按照内存限制切割小文件
+        File dirFile = new File(desFolderPath);
+        String[] fileList = dirFile.list();
+        for (String s : fileList) {
+            System.out.println(s);
+        }
+
+        for (String fileName_re : fileList) {
+
             Map<String, WordsInfo> wordsMap = new HashMap<>(); //存单词的容器
             try {
-                inputStream = new FileInputStream(desFolderPath + "/" + fileName + i + ".txt");
+                inputStream = new FileInputStream(desFolderPath + "/" + fileName_re);
                 bis = new BufferedInputStream(inputStream); //带缓冲数组的输入流
                 reader = new BufferedReader(new InputStreamReader(bis, "utf-8"), 1 * 1024 * 1024);
                 String line;
@@ -82,7 +89,6 @@ public class FindFirstX {
                 result = wordsInfo.word;
             }
         }
-
         System.out.println("第一个不重复的字符串为： " + result); // 输出结果
         long endTime = System.currentTimeMillis();
         System.out.println("程序总运行时间：" + (endTime - startTime) + "ms"); //输出程序运行时间
