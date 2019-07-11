@@ -1,15 +1,16 @@
 package xin.twodog.PingCAP;
 
 import java.io.*;
+import java.util.HashMap;
 
 public class FileIO {
     // 用于创建测试用例
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();    //获取开始时间
-        float a = 0.5F; // 随机输入一个不重复数据
+        float a = 0.15F; // 随机输入一个不重复数据
         String str = "";
         File f = new File("G:/wordTest710.txt");
-        FileOutputStream fop = new FileOutputStream(f, true);
+        FileOutputStream fop = new FileOutputStream(f, false);
         OutputStreamWriter writer = new OutputStreamWriter(fop, "UTF-8");
         BufferedWriter bw = new BufferedWriter(writer, 1 * 1024 * 1024);
         for (long i = 0L; i < 800000L; i++) {
@@ -19,6 +20,14 @@ public class FileIO {
                 a = 2.0F;
             }
             str = Utils.creatWord(1, 100);
+            bw.append(str);
+            bw.append("\r\n");
+            bw.append(str);
+            bw.append("\r\n");
+            bw.append(str);
+            bw.append("\r\n");
+            bw.append(str);
+            bw.append("\r\n");
             bw.append(str);
             bw.append("\r\n");
             bw.append(str);
@@ -68,7 +77,9 @@ public class FileIO {
      * @throws IOException
      */
     public static void cutLargeFile(int num_file, String sourceFilePath, String desFolderPath, String fileName, long smallFileMem) throws IOException {
-
+        long hashMapMem = 0L;// 定义读取文件时候存储的hashmap空间
+        final long tempMapMemLimit = 1024L * 1024L * 1024L * 14L;
+        HashMap<String, Long> tempHashMap = new HashMap<>(); //维护一个减少小文件写入的hash表
         long startTime = System.currentTimeMillis();    //获取开始时间
         FileInputStream inputStream = null;
         BufferedInputStream bis = null;
@@ -93,11 +104,26 @@ public class FileIO {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                int type = line.trim().hashCode() % num_file > 0 ? line.trim().hashCode() % num_file : -line.trim().hashCode() % num_file;
-                //System.out.println("type: " + type);
-                // System.out.println("line.trim().hashCode: " + line.trim().hashCode());
-                FileIO.WriteToFile(line.trim(), '分', index, bws[type]);
-                index++;
+                String trueLine = line.trim();
+
+              /*  System.out.println("tempHashMap.get(trueLine)  " + tempHashMap.get(trueLine));
+                System.out.println("hashMapMem < (long)(1024 * 1024 * 1024 * 14) " + (hashMapMem < tempMapMemLimit));
+                System.out.println("真假： " + tempHashMap.get(trueLine) == null && hashMapMem < tempMapMemLimit);*/
+                if (tempHashMap.get(trueLine) == null && hashMapMem < tempMapMemLimit) {
+                    tempHashMap.put(trueLine, 1L);
+                    hashMapMem += (8L + 4L + (long) trueLine.length()); // hashcode占4字节，频率占8字节，字符串占 trueLine.length() 字节
+                } else if (tempHashMap.get(trueLine) != null && hashMapMem < tempMapMemLimit) {
+                    tempHashMap.put(line.trim(), tempHashMap.get(trueLine) + 1L);
+                    hashMapMem += (8L + 4L + (long) trueLine.length());
+                }
+
+                if (tempHashMap.get(trueLine) < 2 || (tempHashMap.get(trueLine) == null && hashMapMem > (long) (1024 * 1024 * 1024 * 14))) {
+                    int type = trueLine.hashCode() % num_file > 0 ? trueLine.hashCode() % num_file : -trueLine.hashCode() % num_file;
+                    //System.out.println("type: " + type);
+                    // System.out.println("line.trim().hashCode: " + line.trim().hashCode());
+                    FileIO.WriteToFile(trueLine, '分', index, bws[type]);
+                    index++;
+                }
 
             }
             for (int i = 0; i < num_file; i++) {

@@ -18,6 +18,10 @@ class WordsInfo {
         this.frequency = frequency;
     }
 
+    public WordsInfo(long frequency) {
+        this.frequency = frequency;
+    }
+
     public WordsInfo(String word, long firstApperIndex, long frequency) {
         this.word = word;
         this.firstApperIndex = firstApperIndex;
@@ -48,7 +52,7 @@ public class FindFirstX {
         FileInputStream inputStream = null;
         BufferedInputStream bis = null;
         BufferedReader reader = null;
-        FileIO.cutLargeFile(num_files, sourceFilePath, desFolderPath, fileName, 1024 * 1024 * 10); //按照内存限制切割小文件
+        FileIO.cutLargeFile(num_files, sourceFilePath, desFolderPath, fileName, 1024 * 1024 * 40); //按照内存限制切割小文件
         File dirFile = new File(desFolderPath);
         String[] fileList = dirFile.list();
         for (String s : fileList) {
@@ -106,7 +110,6 @@ public class FindFirstX {
         if (wordsMap.get(s) != null)
             wordsMap.replace(s.trim(), new WordsInfo(wordsMap.get(s.trim()).firstApperIndex, wordsMap.get(s.trim()).frequency + 1L));
         else wordsMap.put(s, new WordsInfo(countIndex, 1L));
-
     }
 
     /**
