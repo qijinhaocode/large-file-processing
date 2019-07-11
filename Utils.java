@@ -1,7 +1,6 @@
 package xin.twodog.PingCAP;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 public class Utils {
 
@@ -22,22 +21,6 @@ public class Utils {
         return str;
     }
 
-    public static void main(String[] args) throws Exception {
-        String strPath = "G:/test.txt";
-        String a = "gsgsfghsh";
-        System.out.println(a.hashCode() % 38);
-        System.out.println(JSHash(a) % 38);
-        System.out.println(FNVHash1(a) % 38);
-        System.out.println(DEKHash(a) % 38);
-        System.out.println(APHash(a) % 38);
-        FileIO.delFolder("G:/123");
-        File dirFile = new File("G:/PingCAP");
-        String[] fileList = dirFile.list();
-        for (String s : fileList
-        ) {
-            System.out.println(s);
-        }
-    }
 
     /**
      * 返回文件内存大小

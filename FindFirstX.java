@@ -48,7 +48,7 @@ public class FindFirstX {
         FileInputStream inputStream = null;
         BufferedInputStream bis = null;
         BufferedReader reader = null;
-        FileIO.cutLargeFile(num_files, sourceFilePath, desFolderPath, fileName, 1024 * 1024 * 5); //按照内存限制切割小文件
+        FileIO.cutLargeFile(num_files, sourceFilePath, desFolderPath, fileName, 1024 * 1024 * 10); //按照内存限制切割小文件
         File dirFile = new File(desFolderPath);
         String[] fileList = dirFile.list();
         for (String s : fileList) {

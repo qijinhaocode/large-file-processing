@@ -64,6 +64,7 @@ public class FileIO {
      * @param sourceFilePath 被分割源文件路径
      * @param desFolderPath  存放分割后目标文件夹路径
      * @param fileName       小目标文件标准名称
+     * @param smallFileMem   小文件内存限制
      * @throws IOException
      */
     public static void cutLargeFile(int num_file, String sourceFilePath, String desFolderPath, String fileName, long smallFileMem) throws IOException {
